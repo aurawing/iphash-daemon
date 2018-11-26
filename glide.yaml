@@ -1,0 +1,5 @@
+package: iphash-daemon
+import:
+- package: github.com/sevlyar/go-daemon
+  version: v0.1.4
+- package: github.com/kardianos/osext
