@@ -7,6 +7,7 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/marcsauter/single"
 	"github.com/sevlyar/go-daemon"
 )
 
@@ -50,6 +51,15 @@ func main() {
 		return
 	}
 	defer cntxt.Release()
+
+	s := single.New("iphash-daemon")
+	if err := s.CheckLock(); err != nil && err == single.ErrAlreadyRunning {
+		log.Fatal("Another instance of iphash-daemon is already running, exiting")
+	} else if err != nil {
+		// Another error occurred, might be worth handling it as well
+		log.Fatalf("Failed to acquire exclusive app lock: %#v", err)
+	}
+	defer s.TryUnlock()
 
 	log.Println("-------------------------")
 	log.Println("- iphash-daemon started -")

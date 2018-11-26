@@ -30,7 +30,7 @@ func (this *upgrader) upgrade() {
 	var newUpgradeInfo *upgradeInfo
 	exist, err := pathExists(upgradeFileName)
 	if err != nil {
-		log.Println("[Error] Check local upgrade information file failed:", err)
+		log.Printf("[Error] Check local upgrade information file failed: %#v \n", err)
 		this.finish <- this.upgradeInfo
 		return
 	}
@@ -38,13 +38,13 @@ func (this *upgrader) upgrade() {
 		if this.upgradeInfo.Version == "" {
 			data, err := ioutil.ReadFile(upgradeFileName)
 			if err != nil {
-				log.Println("[Error] Read local upgrade information file failed:", err)
+				log.Printf("[Error] Read local upgrade information file failed: %#v \n", err)
 				this.finish <- this.upgradeInfo
 				return
 			}
 			err = json.Unmarshal([]byte(data), &this.upgradeInfo)
 			if err != nil {
-				log.Println("[Error] Unmarshal local upgrade information file to json failed:", err)
+				log.Printf("[Error] Unmarshal local upgrade information file to json failed: %#v \n", err)
 				this.finish <- this.upgradeInfo
 				return
 			}
@@ -52,7 +52,7 @@ func (this *upgrader) upgrade() {
 	}
 	newUpgradeInfo, err = getUpgradeInfo()
 	if err != nil {
-		log.Println("[Error] Get upgrade information from server failed:", err)
+		log.Printf("[Error] Get upgrade information from server failed: %#v \n", err)
 		this.finish <- this.upgradeInfo
 		return
 	}
@@ -61,20 +61,20 @@ func (this *upgrader) upgrade() {
 		//download and decompress package
 		err := downloadAndDecompress(newUpgradeInfo)
 		if err != nil {
-			log.Println("[Error] Download and decompress new package failed:", err)
+			log.Printf("[Error] Download and decompress new package failed: %#v \n", err)
 			this.finish <- this.upgradeInfo
 			return
 		}
 		//save new upgrade file to disk
 		data, err := json.MarshalIndent(newUpgradeInfo, "", "      ")
 		if err != nil {
-			log.Println("[Error] Marshal new upgrade information failed:", err)
+			log.Printf("[Error] Marshal new upgrade information failed: %#v \n", err)
 			this.finish <- this.upgradeInfo
 			return
 		}
 		err = ioutil.WriteFile(upgradeFileName, data, 0666)
 		if err != nil {
-			log.Println("[Error] Save new upgrade information to disk failed:", err)
+			log.Printf("[Error] Save new upgrade information to disk failed: %#v \n", err)
 			this.finish <- this.upgradeInfo
 			return
 		}

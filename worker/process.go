@@ -32,7 +32,7 @@ func (this *procManager) init() {
 	if err == nil {
 		procInit.Wait()
 	} else {
-		log.Println("[Error] IPFS init failed:", err)
+		log.Printf("[Error] IPFS init failed: %#v \n", err)
 	}
 }
 
@@ -42,7 +42,7 @@ func (this *procManager) prepare() {
 	if err == nil {
 		procPre.Wait()
 	} else {
-		log.Println("[Error] install dependencies failed:", err)
+		log.Printf("[Error] install dependencies failed: %#v \n", err)
 	}
 }
 
@@ -54,7 +54,7 @@ func (this *procManager) executeIpfs() {
 			this.ipfs = procIpfs
 			procIpfs.Wait()
 		} else {
-			log.Println("[Error] Error when starting IPFS:", err)
+			log.Printf("[Error] Error when starting IPFS: %#v \n", err)
 		}
 	}
 	this.ipfsSig <- struct{}{}
@@ -68,7 +68,7 @@ func (this *procManager) executeMonitor() {
 			this.monitor = procMonitor
 			procMonitor.Wait()
 		} else {
-			log.Println("[Error] Error when starting IPFS-monitor:", err)
+			log.Println("[Error] Error when starting ipfs-monitor: %#v \n", err)
 		}
 	}
 	this.monitorSig <- struct{}{}
