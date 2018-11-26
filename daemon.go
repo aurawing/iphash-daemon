@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"flag"
+	"fmt"
 	"iphash-daemon/worker"
 	"log"
 	"os"
+	"os/exec"
 	"syscall"
 
 	"github.com/marcsauter/single"
@@ -130,10 +133,27 @@ func main1() {
 	// 	fmt.Println(err)
 	// }
 	// os.StartProcess("/bin/ping", []string{"ping", "-c 3", "www.baidu.com"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
-	var (
-		stop = make(chan struct{})
-		done = make(chan struct{})
-	)
-	executor := &worker.Main{Done: done, Stop: stop}
-	executor.Start()
+	// var (
+	// 	stop = make(chan struct{})
+	// 	done = make(chan struct{})
+	// )
+	// executor := &worker.Main{Done: done, Stop: stop}
+	// executor.Start()
+
+	// procCheck, err := os.StartProcess("/tmp/iphash/iphash-linux-amd64-v0.01/ipfs", []string{"ipfs", "stats", "bw"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+	// if err != nil {
+	// 	fmt.Printf("%#v", err)
+	// }
+	// procCheck.Wait()
+	// fmt.Println("finish")
+
+	cmd := exec.Command("/tmp/iphash/iphash-linux-amd64-v0.01/ipfs", "stats", "bw")
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("out:", outb.String(), "err:", errb.String())
 }

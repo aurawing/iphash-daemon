@@ -1,9 +1,11 @@
 package worker
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"runtime"
 	"time"
 )
@@ -21,7 +23,10 @@ func (this *procManager) boot() {
 	this.init()
 	this.prepare()
 	go this.executeIpfs()
-	time.Sleep(time.Second * 10)
+	err := this.check()
+	if err != nil {
+		log.Printf("[Error] IPFS started failed: %#v \n", err)
+	}
 	go this.executeMonitor()
 	time.Sleep(time.Second * 3)
 }
@@ -44,6 +49,32 @@ func (this *procManager) prepare() {
 	} else {
 		log.Printf("[Error] install dependencies failed: %#v \n", err)
 	}
+}
+
+func (this *procManager) check() error {
+	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
+	i := 30
+	for i > 0 {
+		cmd := exec.Command(folderName+"/ipfs", "stats", "bw")
+		var outb, errb bytes.Buffer
+		cmd.Stdout = &outb
+		cmd.Stderr = &errb
+		err := cmd.Run()
+		if err == nil {
+			return nil
+		} else {
+			i = i - 1
+		}
+		// procCheck, err := os.StartProcess(folderName+"/ipfs", []string{"ipfs", "stats", "bw"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+		// if err == nil {
+		// 	procCheck.Wait()
+		// 	return nil
+		// } else {
+		// 	i = i - 1
+		// }
+		time.Sleep(time.Second * 1)
+	}
+	return fmt.Errorf("ipfs instance may not properly started")
 }
 
 func (this *procManager) executeIpfs() {
