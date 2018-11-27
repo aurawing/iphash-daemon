@@ -4,3 +4,5 @@ import:
   version: v0.1.4
 - package: github.com/kardianos/osext
 - package: github.com/marcsauter/single
+- package: github.com/robfig/cron
+  version: v1.1
