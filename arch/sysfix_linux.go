@@ -13,5 +13,5 @@ func ExtScript() string {
 }
 
 func CommandExecuteFix(commands ...string) *exec.Cmd {
-	return exec.Command(commands[0], commands[1:])
+	return exec.Command(commands[0], commands[1:]...)
 }
