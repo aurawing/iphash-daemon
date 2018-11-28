@@ -44,12 +44,23 @@ func (this *procManager) init() {
 
 func (this *procManager) prepare() {
 	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
-	procPre, err := os.StartProcess(folderName+string(os.PathSeparator)+"install"+arch.ExtScript(), []string{"install" + arch.ExtScript()}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
-	if err == nil {
-		procPre.Wait()
-	} else {
+	// procPre, err := os.StartProcess(folderName+string(os.PathSeparator)+"install"+arch.ExtScript(), []string{"install" + arch.ExtScript()}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+	// if err == nil {
+	// 	procPre.Wait()
+	// } else {
+	// 	log.Printf("[Error] install dependencies failed: %#v \n", err)
+	// }
+	//cmd := exec.Command(folderName + string(os.PathSeparator) + "install" + arch.ExtScript())
+	cmd := arch.CommandExecuteFix(folderName + string(os.PathSeparator) + "install" + arch.ExtScript())
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
+	if err != nil {
+		log.Println(errb.String())
 		log.Printf("[Error] install dependencies failed: %#v \n", err)
 	}
+	log.Println(outb.String())
 }
 
 func (this *procManager) check() error {

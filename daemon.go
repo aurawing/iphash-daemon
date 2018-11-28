@@ -4,6 +4,18 @@ import "iphash-daemon/entry"
 
 func main() {
 	entry.Start()
+	// arf := []string{"D:\\test\\download\\iphash-windows-amd64-v0.01\\install.bat"}
+	// cmms := append([]string{"/C"}, arf...)
+	// cmd := exec.Command("cmd", cmms...)
+	// var outb, errb bytes.Buffer
+	// cmd.Stdout = &outb
+	// cmd.Stderr = &errb
+	// err := cmd.Run()
+	// if err != nil {
+	// 	fmt.Println(errb.String())
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(outb.String())
 }
 
 func main1() {
