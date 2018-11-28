@@ -6,3 +6,5 @@ import:
 - package: github.com/marcsauter/single
 - package: github.com/robfig/cron
   version: v1.1
+- package: github.com/takama/daemon
+  version: 0.11.0

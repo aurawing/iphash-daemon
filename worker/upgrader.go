@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"iphash-daemon/arch"
 	"log"
 	"net/http"
 	"os"
@@ -160,9 +161,9 @@ func downloadAndDecompress(upgradeInfo *upgradeInfo) error {
 	}
 	needDecompress := true
 	if ret {
-		ret1, _ := pathExists(folderName + "/ipfs-monitor")
-		ret2, _ := pathExists(folderName + "/ipfs")
-		ret3, _ := pathExists(folderName + "/install.sh")
+		ret1, _ := pathExists(folderName + string(os.PathSeparator) + "ipfs-monitor" + arch.ExtExecution())
+		ret2, _ := pathExists(folderName + string(os.PathSeparator) + "ipfs" + arch.ExtExecution())
+		ret3, _ := pathExists(folderName + string(os.PathSeparator) + "install" + arch.ExtScript())
 		if ret1 && ret2 && ret3 {
 			needDecompress = false
 		} else {
@@ -175,13 +176,13 @@ func downloadAndDecompress(upgradeInfo *upgradeInfo) error {
 	}
 	if needDecompress { // Decompress package
 		log.Println("Decompressing package", packageName)
-		err = deCompress(packageName, "./")
+		err = deCompress(packageName, "."+string(os.PathSeparator))
 		if err != nil {
 			return err
 		}
-		os.Chmod(folderName+"/ipfs-monitor", 0755)
-		os.Chmod(folderName+"/ipfs", 0755)
-		os.Chmod(folderName+"/install.sh", 0755)
+		os.Chmod(folderName+string(os.PathSeparator)+"ipfs-monitor"+arch.ExtExecution(), 0755)
+		os.Chmod(folderName+string(os.PathSeparator)+"ipfs"+arch.ExtExecution(), 0755)
+		os.Chmod(folderName+string(os.PathSeparator)+"install"+arch.ExtScript(), 0755)
 		log.Println("Package", packageName, "has been decompressed")
 	}
 	return nil

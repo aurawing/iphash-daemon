@@ -3,6 +3,7 @@ package worker
 import (
 	"bytes"
 	"fmt"
+	"iphash-daemon/arch"
 	"log"
 	"os"
 	"os/exec"
@@ -33,7 +34,7 @@ func (this *procManager) boot() {
 
 func (this *procManager) init() {
 	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
-	procInit, err := os.StartProcess(folderName+"/ipfs", []string{"ipfs", "init"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+	procInit, err := os.StartProcess(folderName+string(os.PathSeparator)+"ipfs"+arch.ExtExecution(), []string{"ipfs" + arch.ExtExecution(), "init"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
 	if err == nil {
 		procInit.Wait()
 	} else {
@@ -43,7 +44,7 @@ func (this *procManager) init() {
 
 func (this *procManager) prepare() {
 	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
-	procPre, err := os.StartProcess(folderName+"/install.sh", []string{"install.sh"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+	procPre, err := os.StartProcess(folderName+string(os.PathSeparator)+"install"+arch.ExtScript(), []string{"install" + arch.ExtScript()}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
 	if err == nil {
 		procPre.Wait()
 	} else {
@@ -55,7 +56,7 @@ func (this *procManager) check() error {
 	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
 	i := 30
 	for i > 0 {
-		cmd := exec.Command(folderName+"/ipfs", "stats", "bw")
+		cmd := exec.Command(folderName+string(os.PathSeparator)+"ipfs"+arch.ExtExecution(), "stats", "bw")
 		var outb, errb bytes.Buffer
 		cmd.Stdout = &outb
 		cmd.Stderr = &errb
@@ -80,7 +81,7 @@ func (this *procManager) check() error {
 func (this *procManager) executeIpfs() {
 	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
 	for !this.stopping {
-		procIpfs, err := os.StartProcess(folderName+"/ipfs", []string{"ipfs", "daemon"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+		procIpfs, err := os.StartProcess(folderName+string(os.PathSeparator)+"ipfs"+arch.ExtExecution(), []string{"ipfs" + arch.ExtExecution(), "daemon"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
 		if err == nil {
 			this.ipfs = procIpfs
 			procIpfs.Wait()
@@ -94,7 +95,7 @@ func (this *procManager) executeIpfs() {
 func (this *procManager) executeMonitor() {
 	folderName := fmt.Sprintf("iphash-%s-%s-%s", runtime.GOOS, runtime.GOARCH, this.upgradeInfo.Version)
 	for !this.stopping {
-		procMonitor, err := os.StartProcess(folderName+"/ipfs-monitor", []string{"ipfs-monitor"}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
+		procMonitor, err := os.StartProcess(folderName+string(os.PathSeparator)+"ipfs-monitor"+arch.ExtExecution(), []string{"ipfs-monitor" + arch.ExtExecution()}, &os.ProcAttr{Files: []*os.File{os.Stdin, os.Stdout, os.Stderr}})
 		if err == nil {
 			this.monitor = procMonitor
 			procMonitor.Wait()

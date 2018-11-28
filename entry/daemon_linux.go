@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/marcsauter/single"
-	"github.com/robfig/cron"
 	"github.com/sevlyar/go-daemon"
 )
 
@@ -35,7 +34,7 @@ func Start() {
 		PidFilePerm: 0644,
 		LogFileName: logFileName,
 		LogFilePerm: 0640,
-		WorkDir:     "./",
+		WorkDir:     "." + string(os.PathSeparator),
 		Umask:       027,
 		Args:        []string{"[iphash-daemon]"},
 	}
@@ -71,7 +70,7 @@ func Start() {
 	log.Println("- iphash-daemon started -")
 	log.Println("-------------------------")
 
-	setupLog()
+	setupLog(logFileName)
 	//go worker()
 	executor := &worker.Main{Done: done, Stop: stop}
 	go executor.Start()
@@ -113,30 +112,4 @@ func termHandler(sig os.Signal) error {
 func reloadHandler(sig os.Signal) error {
 	log.Println("configuration reloaded")
 	return nil
-}
-
-func setupLog() {
-	lf, err := NewLogFile(logFileName, os.Stderr)
-	if err != nil {
-		log.Fatal("Unable to create log file: ", err)
-	}
-	log.SetOutput(lf)
-
-	rotateLogSignal := make(chan struct{})
-	c := cron.New()
-	c.AddFunc("0 0 0 * * ?", func() {
-		rotateLogSignal <- struct{}{}
-	})
-	c.Start()
-
-	// rotate log every 30 seconds.
-	//rotateLogSignal := time.Tick(24 * time.Hour)
-	go func() {
-		for {
-			<-rotateLogSignal
-			if err := lf.Rotate(); err != nil {
-				log.Fatal("Unable to rotate log: ", err)
-			}
-		}
-	}()
 }

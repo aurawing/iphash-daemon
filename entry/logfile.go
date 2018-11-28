@@ -1,9 +1,12 @@
 package entry
 
 import (
+	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/robfig/cron"
 )
 
 type LogFile struct {
@@ -58,4 +61,30 @@ func (l *LogFile) Rotate() error {
 		}
 	}
 	return nil
+}
+
+func setupLog(logFileName string) {
+	lf, err := NewLogFile(logFileName, os.Stderr)
+	if err != nil {
+		log.Fatal("Unable to create log file: ", err)
+	}
+	log.SetOutput(lf)
+
+	rotateLogSignal := make(chan struct{})
+	c := cron.New()
+	c.AddFunc("0 0 0 * * ?", func() {
+		rotateLogSignal <- struct{}{}
+	})
+	c.Start()
+
+	// rotate log every 30 seconds.
+	//rotateLogSignal := time.Tick(24 * time.Hour)
+	go func() {
+		for {
+			<-rotateLogSignal
+			if err := lf.Rotate(); err != nil {
+				log.Fatal("Unable to rotate log:", err)
+			}
+		}
+	}()
 }

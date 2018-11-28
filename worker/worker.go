@@ -29,7 +29,7 @@ func (this *Main) Start() {
 			pManager.stop()
 			this.Done <- struct{}{}
 		case <-time.After(interval): //call upgrader to check and download new package of iphash
-			interval = time.Minute * 1
+			interval = time.Minute * 10
 			finish := make(chan upgradeInfo)
 			upgrader := &upgrader{upgradeInfo: versionInfo, finish: finish}
 			go upgrader.upgrade()
