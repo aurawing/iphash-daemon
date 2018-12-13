@@ -2,7 +2,7 @@
 
 iphash-daemon是星际哈希的守护进程兼自动更新程序，程序运行后会自动驻留系统后台运行，同时开始定时向网站请求当前iphash的程序发布版本信息，发现有新版本后会自动下载程序包至本地解压，并停止旧版本程序，然后启动新版本程序。
 
-升级文件位于`http://hash.iptokenmain.com/upgrade/iphash-${sys}-${arch}.json`，其中`${sys}`为操作系统类型（linux或windows），`${arch}`为硬件架构（amd64或arm64），比如amd64平台下linux版本的升级文件为`http://hash.iptokenmain.com/upgrade/iphash-linux-amd64-v0.01.json`，不同平台的iphash-daemon会根据自身架构和系统获取对应的升级文件，升级文件内容如下：
+升级文件位于`http://hash.iptokenmain.com/upgrade/iphash-${sys}-${arch}.json`，其中`${sys}`为操作系统类型（linux或windows），`${arch}`为硬件架构（amd64或arm64），比如amd64平台下linux版本的升级文件为`http://hash.iptokenmain.com/upgrade/iphash-linux-amd64.json`，不同平台的iphash-daemon会根据自身架构和系统获取对应的升级文件，升级文件内容如下：
 ```
 {
   "version":"v0.01",
